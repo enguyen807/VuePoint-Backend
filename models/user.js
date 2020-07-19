@@ -14,10 +14,14 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  country: {
+    type: String,
+    required: true
+  },
   status: {
     type: String,
     default: 'I am new!'
   }
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema, 'user');

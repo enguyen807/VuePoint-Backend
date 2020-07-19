@@ -12,9 +12,15 @@ module.exports = {
     if (!validator.isEmail(userInput.email)) {
       errors.push({ message: 'E-Mail is invalid.' });
     }
+    if (validator.isEmpty(userInput.name)) {
+      errors.push({message: 'First name and last name must not be empty.'})
+    }
+    if (validator.isEmpty(userInput.country)) {
+      errors.push({message: 'Country must not be empty.'})
+    }    
     if (
       validator.isEmpty(userInput.password) ||
-      !validator.isLength(userInput.password, { min: 5 })
+      !validator.isLength(userInput.password, { min: 6 })
     ) {
       errors.push({ message: 'Password too short!' });
     }
@@ -33,7 +39,8 @@ module.exports = {
     const user = new User({
       email: userInput.email,
       name: userInput.name,
-      password: hashedPw
+      password: hashedPw,
+      country: userInput.country
     });
     const createdUser = await user.save();
     return { ...createdUser._doc, _id: createdUser._id.toString() };

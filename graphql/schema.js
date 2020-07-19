@@ -5,7 +5,8 @@ module.exports = buildSchema(`
     _id: ID!
     name: String!
     email: String!
-    password: String
+    country: String!
+    password: String!
     status: String!
   }
 
@@ -18,6 +19,7 @@ module.exports = buildSchema(`
     email: String!
     name: String!
     password: String!
+    country: String!
   }
 
   type RootQuery {

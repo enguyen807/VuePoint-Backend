@@ -10,7 +10,7 @@ const graphqlHttp = require("express-graphql").graphqlHTTP;
 
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
-const auth = require("./middleware/auth");
+const auth = require("./middleware/is-auth");
 
 const app = express();
 
@@ -84,7 +84,7 @@ app.use(
     schema: graphqlSchema,
     rootValue: graphqlResolver,
     graphiql: true,
-    formatError(err) {
+    customFormatErrorFn(err) {
       if (!err.originalError) {
         return err;
       }
@@ -110,10 +110,10 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.opr44.mongodb.net/messages?retryWrites=true`
+    `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.opr44.mongodb.net/vuepoint?retryWrites=true`
   )
   .then((result) => {
-    const PORT = process.env.APP_PORT || 3000;
+    const PORT = 3000;
 
     app.listen(PORT, () => {
       console.log(`Server is listening on port ${PORT}`);
