@@ -7,12 +7,15 @@ module.exports = buildSchema(`
     email: String!
     country: String!
     password: String!
-    status: String!
+    isVerified: Boolean!
+    isAdmin: Boolean!
   }
 
   type AuthData {
     token: String!
     userId: String!
+    isVerified: Boolean!
+    isAdmin: Boolean!
   }  
 
   input UserInputData {

@@ -7,6 +7,9 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const graphqlHttp = require("express-graphql").graphqlHTTP;
+const jwt = require("jsonwebtoken");
+
+const User = require("./models/user");
 
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
@@ -25,7 +28,7 @@ const fileStorage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  console.log(file)
+  console.log(file);
   if (
     file.mimetype === "image/png" ||
     file.mimetype === "image/jpg" ||
@@ -63,19 +66,35 @@ app.use((req, res, next) => {
 
 app.use(auth);
 
-app.put('/post-image', (req, res, next) => {
+app.put("/post-image", (req, res, next) => {
   if (!req.isAuth) {
-    throw new Error('Not authenticated!');
+    throw new Error("Not authenticated!");
   }
   if (!req.file) {
-    return res.status(200).json({ message: 'No file provided!' });
+    return res.status(200).json({ message: "No file provided!" });
   }
   if (req.body.oldPath) {
     clearImage(req.body.oldPath);
   }
   return res
     .status(201)
-    .json({ message: 'File stored.', filePath: req.file.path });
+    .json({ message: "File stored.", filePath: req.file.path });
+});
+
+app.get("/confirmation/:token", async (req, res) => {
+  try {
+    const { userId } = jwt.verify(
+      req.params.token,
+      `${process.env.EMAIL_SECRET}`
+    );
+    const user = await User.findOne({ _id: userId });
+    user.confirmed = true;
+    await user.save()
+
+    return res.redirect('http://localhost:8080/login')
+  } catch (e) {
+    res.send("error");
+  }
 });
 
 app.use(

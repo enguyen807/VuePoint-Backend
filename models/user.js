@@ -18,9 +18,13 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  status: {
-    type: String,
-    default: 'I am new!'
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
