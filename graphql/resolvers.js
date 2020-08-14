@@ -18,6 +18,7 @@ const { clearImage } = require("../util/file");
 
 module.exports = {
   createUser: async function ({ userInput }, req) {
+    console.log(req);
     //   const email = args.userInput.email;
     const errors = [];
     if (!validator.isEmail(userInput.email)) {
@@ -55,7 +56,7 @@ module.exports = {
     });
     const createdUser = await user.save();
 
-    // await this.verifyEmail(createdUser);
+    // await this.verifyEmail(userInput.email);
 
     return { ...createdUser._doc, _id: createdUser._id.toString() };
   },
@@ -87,9 +88,29 @@ module.exports = {
       isAdmin: user.isAdmin,
     };
   },
-  verifyEmail: async function (user) {
+  user: async function (args, req) {
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+    const user = await User.findById(req.userId);
+    if (!user) {
+      const error = new Error("No user found!");
+      error.code = 404;
+      throw error;
+    }
+    return { ...user._doc, _id: user._id.toString() };
+  },
+  verifyEmail: async function ({ email }) {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      const error = new Error("No user found!");
+      error.code = 404;
+      throw error;
+    }
     jwt.sign(
-      { userId: user._id.toString(), email: user.email },
+      { userId: user._id.toString(), email: email },
       `${process.env.EMAIL_SECRET}`,
       { expiresIn: "1d" },
       (err, emailToken) => {
@@ -103,5 +124,7 @@ module.exports = {
         });
       }
     );
+
+    return { ...user._doc, _id: user._id.toString() };
   },
 };

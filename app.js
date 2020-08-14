@@ -88,7 +88,7 @@ app.get("/confirmation/:token", async (req, res) => {
       `${process.env.EMAIL_SECRET}`
     );
     const user = await User.findOne({ _id: userId });
-    user.confirmed = true;
+    user.isVerified = true;
     await user.save()
 
     return res.redirect('http://localhost:8080/login')
